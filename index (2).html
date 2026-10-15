@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pré-teste: pré-natal de baixo ou alto risco</title>
+<style>
+:root{--bg:#F6EEF9;--card:#FFFFFF;--ink:#2B1238;--mut:#6B4A7D;--pri:#4A1D6B;--onpri:#FFFFFF;--acc:#8E1A5B;--line:#D9C3E6;--sel:#F9E3F0;--ok:#2F6B3F;--ko:#B3261E}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1B0F24;--card:#2A1838;--ink:#F3E8F8;--mut:#BFA3CF;--pri:#D9B3F0;--onpri:#1B0F24;--acc:#F08CC0;--line:#47295E;--sel:#42193A;--ok:#7FD09A;--ko:#FF9C94}}
+:root[data-theme="dark"]{--bg:#1B0F24;--card:#2A1838;--ink:#F3E8F8;--mut:#BFA3CF;--pri:#D9B3F0;--onpri:#1B0F24;--acc:#F08CC0;--line:#47295E;--sel:#42193A;--ok:#7FD09A;--ko:#FF9C94}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 Calibri,"Segoe UI",Arial,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font:700 28px/1.2 Georgia,serif;color:var(--pri);margin:8px 0}
+h2{font-size:15px;letter-spacing:.04em;text-transform:uppercase;color:var(--acc);margin:28px 0 8px}
+p{margin:8px 0}.mut{color:var(--mut)}
+fieldset{background:var(--card);border:1px solid var(--line);border-radius:14px;margin:0 0 12px;padding:14px 16px;min-width:0}
+legend{font-weight:600;padding:0 6px;max-width:100%}
+label{display:block;border:2px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:8px;cursor:pointer}
+label:has(input:checked){border-color:var(--acc);background:var(--sel)}
+input[type=radio]{margin-right:8px;accent-color:var(--acc)}
+input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:140px;font-family:Consolas,monospace;font-size:14px}
+button{font:inherit;font-weight:700;background:var(--pri);color:var(--onpri);border:0;border-radius:10px;padding:12px 20px;cursor:pointer}
+button.ghost{background:transparent;color:var(--pri);border:2px solid var(--pri)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.top{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:8px 0;z-index:5;border-bottom:1px solid var(--line)}
+.pb{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:6px}.pb i{display:block;height:100%;background:var(--acc);width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}
+.res{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin-bottom:10px}
+.res .t{font-weight:600}.res .m{font-size:14px;color:var(--mut)}
+.track{height:22px;border-radius:6px;background:var(--line);overflow:hidden;margin:8px 0 4px}
+.track i{display:block;height:100%;background:var(--acc)}
+.chip{font-size:13px;font-weight:700;border-radius:99px;padding:2px 10px;border:1.5px solid var(--acc);color:var(--acc);white-space:nowrap}
+.big{font:700 46px/1 Georgia,serif;color:var(--pri)}
+.foot{margin-top:32px;text-align:center}.foot a{color:var(--mut);font-size:14px;cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const G=[
+["Fatores sociodemográficos · Individuais","A",["Idade < 15 ou > 35 anos","Altura < 1,45 m","IMC indicando baixo peso, sobrepeso ou obesidade"]],
+["Fatores sociodemográficos · Trabalho e ambiente","A",["Esforço físico excessivo, carga horária extensa","Exposição a agentes físicos, químicos ou biológicos","Condições ambientais desfavoráveis"]],
+["Fatores sociodemográficos · Psicossociais","A",["Situação familiar ou conjugal insegura","Não aceitação da gravidez","Baixa escolaridade (< 5 anos de estudo)"]],
+["Condições anteriores à gestação · Condições clínicas","B",["Cardiopatias; pneumopatias e nefropatias graves","Endocrinopatias e doenças hematológicas","Hipertensão arterial crônica","Doenças neurológicas, psiquiátricas e autoimunes","TVP ou embolia pulmonar prévia","Infecciosas: IST, hanseníase, tuberculose","Ginecopatias","Dependência de drogas lícitas ou ilícitas"]],
+["Condições anteriores à gestação · História obstétrica","B",["Óbito fetal anterior","Síndrome hipertensiva com mau resultado perinatal","Abortamento habitual","Esterilidade ou infertilidade"]],
+["Intercorrências da gestação atual · Feto, anexos e infecções","B",["RCIU, polidrâmnio ou oligoidrâmnio","Gemelaridade","Malformação ou arritmia fetal","Hepatites, toxoplasmose, HIV, sífilis, rubéola, citomegalovírus"]],
+["Intercorrências da gestação atual · Condições maternas","B",["Síndromes hipertensivas","Diabetes gestacional","ITU de repetição, pielonefrites","Anemia grave (Hb < 8 g/dL)","Desnutrição grave ou obesidade mórbida","NIC III ou suspeita de câncer de mama","Adolescente com risco psicossocial"]]];
+const Q=[];G.forEach(([c,k,l])=>l.forEach(t=>Q.push({c,t,k})));
+const N=Q.length,$=s=>document.querySelector(s),app=$('#app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let ans={},name='',codes='',sortBy=false;
+try{const s=JSON.parse(ls.get('pt')||'{}');ans=s.a||{};name=s.n||'';codes=ls.get('tc')||''}catch(e){}
+const save=()=>ls.set('pt',JSON.stringify({a:ans,n:name}));
+const LB={A:'Atenção básica (baixo risco)',B:'Pré-natal de alto risco (PNAR)'};
+const foot=v=>`<p class="foot"><a id="sw">${v=='prof'?'← Voltar ao pré-teste':'Área do professor'}</a></p>`;
+function test(){
+let h=`<h1>Pré-teste: pré-natal de baixo ou alto risco</h1>
+<p class="mut">Para cada condição, escolha onde o pré-natal pode ser realizado: na <b>atenção básica</b> ou no <b>pré-natal de alto risco (PNAR)</b>. Não há problema em errar: a aula vai explicar cada caso.</p>
+<p><label style="border:0;padding:0;cursor:default"><b>Seu nome</b><input type="text" id="nm" value="${esc(name)}" placeholder="Nome e sobrenome" autocomplete="name"></label></p>
+<div class="top"><span id="cnt"></span><div class="pb"><i id="pg"></i></div></div>`;
+let last='';
+Q.forEach((q,i)=>{if(q.c!==last){h+=`<h2>${esc(q.c)}</h2>`;last=q.c}
+h+=`<fieldset><legend>${i+1}. ${esc(q.t)}</legend>`+['A','B'].map(v=>`<label><input type="radio" name="q${i}" value="${v}" ${ans[i]===v?'checked':''}><b>${v}</b> · ${LB[v]}</label>`).join('')+'</fieldset>'});
+h+=`<div class="row"><button id="go">Enviar respostas</button><span id="warn" class="mut"></span></div>`+foot('test');
+app.innerHTML=h;upd();
+}
+function upd(){const c=Object.keys(ans).length;$('#cnt').textContent=`${c} de ${N} respondidas`;$('#pg').style.width=(100*c/N)+'%';$('#warn').textContent=c<N?'Responda todas as condições para enviar.':''}
+const mycode=()=>(name.trim()?name.trim()+' | ':'')+Q.map((_,i)=>ans[i]||'-').join('');
+function done(){
+app.innerHTML=`<h1>Respostas registradas ✓</h1>
+<p>Copie o código abaixo e envie ao professor (por e-mail, grupo da turma ou como ele orientar).</p>
+<textarea id="cd" readonly>${esc(mycode())}</textarea>
+<div class="row"><button id="cp">Copiar código</button><button class="ghost" id="bk">Revisar respostas</button><span id="ok" class="mut"></span></div>
+<p class="mut">Você só verá o resultado e a explicação durante a aula.</p>`+foot('done');}
+function prof(){
+app.innerHTML=`<h1>Painel do professor</h1>
+<p class="mut">Cole abaixo os códigos recebidos dos alunos (um por linha) e clique em Calcular.</p>
+<textarea id="ta" placeholder="Maria Silva | ABBAB...">${esc(codes)}</textarea>
+<div class="row"><button id="calc">Calcular acertos</button><button class="ghost" id="clr">Limpar</button>
+<label style="border:0;padding:0;margin:0"><input type="checkbox" id="so" ${sortBy?'checked':''}> Menos acertos primeiro</label></div>
+<div id="out"></div>`+foot('prof');if(codes.trim())calc();}
+function calc(){
+const seen={},list=[];
+codes.split(/\n/).forEach((ln,j)=>{const m=ln.match(/[AB\-]{32}/);if(!m||m[0].length!=N)return;const nm=ln.slice(0,m.index).replace(/[|:\-–\s]+$/,'').trim()||('#'+j);seen[nm]=m[0]});
+Object.values(seen).forEach(a=>list.push(a));
+const n=list.length,o=$('#out');
+if(!n){o.innerHTML='<p class="mut">Nenhum código válido encontrado.</p>';return}
+const rows=Q.map((q,i)=>{const a=list.filter(c=>c[i]=='A').length,b=list.filter(c=>c[i]=='B').length,r=q.k=='A'?a:b;return{i,q,a,b,p:Math.round(100*r/n)}});
+const tot=Math.round(rows.reduce((s,r)=>s+r.p,0)/N);
+if(sortBy)rows.sort((x,y)=>x.p-y.p);
+o.innerHTML=`<div class="res"><span class="big">${tot}%</span> <span class="mut">de acerto médio · ${n} aluno${n>1?'s':''}</span></div>`+rows.map(r=>`<div class="res"><div class="t">${r.i+1}. ${esc(r.q.t)}</div>
+<div class="m">${esc(r.q.c)} · <span class="chip">Gabarito: ${r.q.k=='A'?'Atenção básica':'PNAR'}</span></div>
+<div class="track"><i style="width:${r.p}%"></i></div>
+<div class="t">${r.p}% acertaram <span class="m">· Atenção básica: ${Math.round(100*r.a/n)}% · PNAR: ${Math.round(100*r.b/n)}%</span></div></div>`).join('');}
+app.addEventListener('change',e=>{const t=e.target;
+if(t.name&&t.name[0]=='q'){ans[+t.name.slice(1)]=t.value;save();upd()}
+if(t.id=='so'){sortBy=t.checked;calc()}});
+app.addEventListener('input',e=>{if(e.target.id=='nm'){name=e.target.value;save()}if(e.target.id=='ta'){codes=e.target.value;ls.set('tc',codes)}});
+app.addEventListener('click',e=>{const t=e.target;
+if(t.id=='go'){if(Object.keys(ans).length<N){$('#warn').textContent='Faltam respostas.';return}done();window.scrollTo(0,0)}
+if(t.id=='bk'){test();window.scrollTo(0,0)}
+if(t.id=='cp'){const c=$('#cd');c.select();try{navigator.clipboard.writeText(c.value).then(()=>$('#ok').textContent='Copiado!',()=>document.execCommand('copy'))}catch(x){try{document.execCommand('copy');$('#ok').textContent='Copiado!'}catch(y){}}}
+if(t.id=='calc')calc();
+if(t.id=='clr'){codes='';ls.set('tc','');$('#ta').value='';$('#out').innerHTML=''}
+if(t.id=='sw'){(t.textContent.startsWith('←')?test:prof)();window.scrollTo(0,0)}});
+test();
+</script>
+</body>
+</html>
